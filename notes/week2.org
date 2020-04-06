@@ -1,0 +1,296 @@
+#  LocalWords:  Ng pwd
+* Multivariate Linear Regression
+** Multiple Features
+   - Multivariate Linear Regression :: Linear regression with multiple variables.
+
+
+   - Some notation for equations where we can have any number of input variables:
+     - \(m\) is the number of training examples.
+     - \(n\) is the number of features (input variables).
+     - \(x^{(i)}\) is the \(i^{th}\) row of our data set, or the input features
+       of the \(i^{th}\) training example. This can be represented as a \(n
+       \times 1\) vector.
+     - \(x^{(i)}_{j}\) is the value of the \(j^{th}\) feature of the \(i^{th}\)
+       row of our data set.
+   - The multivariable form of the hypothesis function is:
+     \[
+       h_{\theta}(x) = \theta_0 x_0 + \theta_1 x_1 + \theta_2 x_2 + \ldots + \theta_n x_n.
+     \]
+     where \(x_0\) is an imaginary input variable that always equals \(1\).
+   - The \(\theta\)s can be thought of as modifiers that we apply to the actual
+     input values in a training example (the \(x\)s) to make our function
+     approximate the output value.
+   - Because the set of \(\theta\)s can be thought of as a \(n+1\) dimensional
+     vector
+     \begin{equation*}
+     \theta =
+     \begin{bmatrix}
+      \theta_0 \\
+      \theta_1 \\
+      \theta_2 \\
+      \vdots \\
+      \theta_n \\
+     \end{bmatrix}
+     \end{equation*}
+     and the set of \(x\)s can be thought of as a \(n+1\) dimensional vector
+     \begin{equation*}
+     x =
+     \begin{bmatrix}
+      x_0 \\
+      x_1 \\
+      x_2 \\
+      \vdots \\
+      x_n \\
+     \end{bmatrix}
+     \end{equation*}
+     we can write our hypothesis concisely as the product of two vectors:
+     \[
+       h_{\theta}(x) = \theta^T x.
+     \]
+** Gradient Descent For Multiple Variables
+   - We can now update our gradient descent algorithm to be more general and work
+     for any number of features:
+
+     Repeat until convergence:
+     \[
+       \theta_j := \theta_j - \alpha \frac{1}{m} \sum_{i=0}^{m} (h_{\theta}(x^{(i)}) - y^{(i)}) \cdot x_j^{(i)}
+     \]
+
+     where \(j = 0,1,\ldots,n\), and \(n\) is the number of features. Note that
+
+     \[
+       \frac{\partial}{\partial \theta_j} J(\theta) = \frac{1}{m} \sum_{i=0}^{m} (h_{\theta}(x^{(i)}) - y^{(i)}) \cdot x_j^{(i)}
+     \]
+
+     where \(J(\theta)\) is our error function and \(\theta\) is our \(n+1\)
+     dimensional feature vector.
+** Feature Scaling
+   - We can speed up gradient descent by having each of our input values in
+     roughly the same range. This is because \(\theta\) will descend quickly on
+     small ranges and slowly on large ranges, and so will oscillate inefficiently
+     down to the optimum when the variables are very uneven.
+     - To speed up gradient descent, we want to try to get the range of our input
+       variables around the range \(-1\leq x_{(i)} \leq 1\).
+     - Two techniques to help with this are *feature scaling* and *mean
+       normalization*. Feature scaling involves dividing the input values by the
+       range (i.e. the maximum value minus the minimum value) of the input
+       variable, resulting in a new range of just 1. Mean normalization involves
+       subtracting the average value for an input variable from the values for
+       that input variable resulting in a new average value for the input
+       variable of just zero. To implement both of these techniques, adjust your
+       input values as shown in this formula:
+       \[
+         x_{(i)} := \frac{x_{(i)} - \mu_{(i)}}{s_{(i)}}
+       \]
+
+       where \(\mu_{(i)}\) is the average of all the values for feature \((i)\)
+       and \(s_{(i)}\) is the range of values (max - min), or the standard
+       deviation. Note that dividing by the range and dividing by the standard
+       deviation give different results.
+** Learning Rate
+   - To debug gradient descent, you can make a plot with the number of
+     iterations on the x-axis and the value of the error function on the y-axis.
+     If \(J(\theta)\) ever decreases then you probably need to decrease the
+     learning rate (\(\alpha\)).
+   - You can implement automatic convergence tests in your gradient descent
+     algorithms which tell the program to stop looping and declare convergence
+     if \(J(\theta)\) decreases by less than some value \(E\) on an iteration,
+     where \(E\) is some value like \(10^{-3}\). However, in practice it is
+     difficult to choose this threshold.
+   - It has been proven that if \(\alpha\) is sufficiently small then
+     \(J(\theta)\) will decrease on every iteration.
+   - If \(\alpha\) is too small, you will converge too slowly. If \(\alpha\) is
+     too large, you may not converge at all because you are not decreasing on
+     every iteration.
+   - To choose an \(\alpha\) value, Andrew Ng recommends choosing a small value
+     like 0.001 and increasing it by about a factor of 3 as you try different
+     values. So you might try 0.001, 0.003, 0.01, 0.03, 0.1, and 0.3.
+** Features and Polynomial Regression
+   - We can improve our features by *combining multiple features* into one. So
+     for example, if we were trying to predict house prices and we had data
+     about the width and the depth of the property, we could combine these
+     features into one: area = width x depth.
+   - We can improve the form of our hypothesis function by trying different
+     polynomials, such as quadratic, cubic, or square root polynomials.
+     - We might want to do this when our data does not look linear.
+     - For example, if our hypothesis function is \(h_{\theta}(x) = \theta_0 +
+       \theta_1 x_1\), then we can create new features based on \(x_1\) to
+       create a quadratic function \(\theta_0 + \theta_1 x_1 + \theta_2 x_1^2\)
+       or a cubic function \(\theta_0 + \theta_1 x_1 + \theta_2 x_1^2 + \theta_2
+       x_1^3\) which might fit our data better.
+     - When choosing features in this way feature scaling becomes very
+       important because the ranges of the new features can vary drastically
+       from the range of the original.
+* Computing Parameters Analytically
+** Normal Equation
+   - The *Normal Equation* is another method of minimizing our error function.
+   - In this method we will minimize \(J\) by explicitly taking its derivatives
+     with respect to the \(\theta_j\)'s and setting them to zero.
+   - This allows us to find the optimum theta without iteration.
+   - The normal equation formula is:
+     \[
+       \theta = (X^T X)^{-1}X^T y
+     \]
+
+     where \(X\) is the \(m \times (n+1)\) dimensional *design matrix* and \(y\)
+     is the \(m\) dimensional output vector.
+
+     The design matrix has it's first column filled with \(1\)s and the rest
+     filled with the values of each feature. So if we have \(n\) features and
+     \(m\) training examples, and \(x^{(i)}\) is our \(n+1\) dimensional
+     (because it includes \(x_{0}\)) feature vector at row \((i)\), then the
+     design matrix is the \(m \times (n+1)\) dimensional matrix:
+     \begin{equation*}
+     X =
+     \begin{bmatrix}
+       (x^{(1)})^T \\
+       (x^{(2)})^T \\
+       \vdots \\
+       (x^{(m)})^T \\
+     \end{bmatrix}
+     \end{equation*}
+   - When using the normal equation method, there is *no need* to do feature
+     scaling.
+   - Some disadvantages of Gradient Descent compared to Normal Equation are:
+     - You need to figure out an \(\alpha\) value.
+     - You need many iterations.
+   - Some advantages of Gradient Descent compared to Normal Equation are:
+     - Has complexity \(O(kn^2)\) compared to the normal equation's \(O(n^3)\)
+       due to it's need to calculate \((X^T X)^{-1}\), and as a result...
+     - Gradient descent works better than the normal equation method when \(n\)
+       is large.
+       - In practice, when the number of features starts to exceed 10,000 it
+         might be a good time to go from a normal solution to an iterative
+         process.
+** Normal Equation Non-invertibility
+   - When implementing the normal equation in octave we want to use the ~pinv~
+     (pseudo-inverse) function rather than ~inv~. The ~pinv~ function will give
+     you a value of \(\theta\) even if \(X^T X\) is not invertible.
+   - If \(X^T X\) is non-invertible, the common causes might be having:
+     - Redundant features, where two features are very closely related (i.e. they are linearly dependent)
+     - Too many features (e.g. m ≤ n). In this case, delete some features or use
+       "regularization" (to be explained in a later lesson).
+   - Solutions to the above problems include deleting a feature that is linearly
+     dependent with another or deleting one or more features when there are too
+     many features.
+* Octave Tutorial
+** Basics
+   - Octave has standard math operators: ~+,-,*,/,^~
+   - Boolean operators: ~==~ and ~~=~ for equals and not equals
+   - Logical operators: ~&&~, ~||~, ~xor(1,0)~
+   - Variables: ~a = 3~ makes a variable ~a~ with the value ~3~.
+   - Comments start with ~%~.
+   - Semicolons at the end of a line suppress the output.
+   - String literals use single or double quotes.
+   - Printing can be done by omitting a semicolon from the end of a line or using ~disp(a)~.
+   - ~sprintf(str, num)~ can be used to format numbers. ~sprintf('%0.2f', pi)~
+     gives the string ~3.14~.
+   - The command ~format <style>~ sets how Octave formats number representations
+     and accepts options like ~long~ and ~short~ as ~<style>~s.
+   - To create a matrix: ~A = [1 2; 3 4; 5 6]~. Columns are separated by spaces
+     and rows by semicolons.
+   - ~v = 1:0.1:6~ sets ~v~ equal to range of elements that start at 1 and
+     increment by 0.1 up to and including 6. ~v = 1:6~ does the same but with an
+     increment of 1.
+   - ~ones(2,3)~ generates a 2x3 matrix of 1s, and ~zeros(2,3)~ does the same but
+     with 0s.
+   - Math operators work with matrices.
+   - ~rand(3,3)~ generates a 3x3 matrix of random numbers between 0 and 1.
+   - ~hist(matrix)~ plots a histogram.
+   - ~eye(4)~ generates the 4x4 identity matrix.
+   - ~help <command>~ shows a help page for the command.
+** Moving Data Around
+   - ~size(A)~ gives a 1x2 matrix whose (1,1) value is the number of rows of the
+     matrix ~A~ and the (1,2) value is the number of columns.
+     - ~size(A,1)~ gives the number of rows and ~size(A,2)~ gives the columns.
+   - ~length(A)~ gives the size of the longest dimension of ~A~.
+   - ~pwd~ gives the present working directory.
+   - ~cd~ works like on the command line (changes present working directory).
+   - ~ls~ lists the directories and files in the pwd.
+   - If you have a file ~featuresX.dat~ in your pwd, ~load featuresX.dat~ stores
+     the data in that file into a variable ~featuresX~.
+   - ~who~ shows what variables are in the current workspace.
+     - ~whos~ shows a more detailed view with types and sizes of the variables.
+   - ~clear v~ deletes the variable ~v~.
+     - ~clear~ deletes all the variables in the workspace.
+   - ~save hello.dat v~ saves the variable ~v~ into the file ~hello.dat.~ in
+     binary. Append ~-ascii~ to the command to save as text.
+   - ~A(3,2)~ gives the element in the third row and second column of ~A~.
+   - ~A(2,:)~ gives the second row and ~A(:,2)~ gives everything in the second column.
+   - ~A([1 3], :)~ gives the first and third rows.
+   - ~A(:,2) = [10;11;12]~ assigns the second column of ~A~ to the given column vector.
+   - ~A = [A [100; 101; 102]]~ appends a column vector to the right and ~A =
+     [A; [100 101 102]]~ appends a row vector to the bottom.
+   - ~A(:)~ puts all the elements of ~A~ into a single column vector.
+** Computing on Data
+   - ~A*B~ does matrix multiplication and ~A .* B~ does element-wise multiplication.
+   - ~.~ is usually used for element-wise operations, so for example ~A .^ 2~
+     does element-wise squaring.
+   - ~A'~ gives the transpose of ~A~.
+   - ~max(A)~ gives the max value of each column of ~A~, and ~[val, ind] =
+     max(A)~ gives the max values and their indices in the variables ~val~ and ~ind~.
+   - ~A < 3~ does element-wise boolean evaluation.
+   - ~[row, column] = find(A < 3)~ returns the rows and columns of the elements
+     of ~A~ which are less than ~3~.
+   - ~sum(A)~ sums each column of ~A~.
+   - ~prod(A)~ gives the product of each column of ~A~.
+   - ~floor~ rounds down and ~ceil~ rounds up.
+   - ~max(A,B)~ does an element-wise max.
+   - ~max(A,[],1)~ takes the max of each column (default), and ~max(A,[],2)~
+     takes the max of each row.
+   - ~pinv(A)~ gives the pseudo-inverse of ~A~.
+** Plotting Data
+   - ~plot(x,y)~ plots a graph using the ranges of numbers ~x~ and ~y~.
+   - ~hold on;~ tells Octave to add on the previous plot when you call another ~plot~.
+   - ~plot(x,y,'r')~ plots in red.
+   - ~xlabel('string')~ and ~ylabel('string')~ set the labels for the plotted graph.
+   - ~legend('string'...)~ sets the legend for the plots.
+   - ~title('string')~ sets the title for the graph.
+   - ~print -dpng 'myPlot.png'~ saves the current plot to a file.
+   - ~close~ removes the current plot.
+   - ~figure(1); plot(x,y)~ followed by ~figure(2); plot(x,y)~ opens two figures.
+   - ~subplot(rows,cols,ind)~ sets up a window with grid with ~rows~ amount of rows and
+     ~cols~ amount of columns. In each spot in the grid a plot can be made, and
+     ~ind~ determines which spot in the grid the next ~plot~ command will fill.
+   - ~axis([0.5 1 -1 1])~ sets the x range to (0.5, 1) and the y range to (-1 1).
+   - ~clf~ clears a figure.
+   - ~imagesc(A), colorbar, colormap gray~ is useful for visualizing matrices.
+     - This is an example of comma chaining of commands.
+** Control Statements
+   - for:
+     #+begin_src octave
+       v = zeros(10,1);
+       for i=1:10,
+         v(i) = 2^i;
+       end;
+     #+end_src
+   - while, if/elseif, break, continue:
+     #+begin_src octave
+       i = 1;
+       while i <= 5,
+         v(i) = 2^i;
+         i = i + 1;
+         if i == 4,
+           break;
+         elseif i == 3,
+           continue;
+         else i == 2,
+           continue;
+         end;
+       end;
+     #+end_src
+   - Functions in Octave live in their own files and use the syntax:
+     #+begin_src octave
+       function y = squareThisNum(x)
+         y = x^2;
+     #+end_src
+     which tells Octave that this is going to return one value ~y~ and that the
+     function accepts one parameter ~x~.
+   - ~addpath('path')~ tells Octave to look in ~'path'~ for functions. Otherwise
+     it will just look in ~pwd~.
+   - Functions can return multiple values:
+     #+begin_src octave
+       function [y1,y2] = squareAndCube(x)
+         y1 = x^2;
+         y2 = x^3;
+     #+end_src

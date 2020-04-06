@@ -1,0 +1,136 @@
+* Introduction
+  - Tom Mitchell's definition of Machine Learning is:
+    #+begin_quote
+    A computer is said to learn from experience E with respect to some class of
+    tasks T and performance measure P, if P at tasks T improves with E.
+    #+end_quote
+  - Machine learning can generally be classified in two ways:
+** Supervised Learning
+   - In supervised learning we are given a data set and already know what
+     correct output should look like, and we assume that their is a relationship
+     between input and output.
+   - Supervised learning problems are categorized into regression and
+     classification problems:
+     - In a regression problem we are trying to map input variables to some
+       continuous function, i.e. trying to predict results within a continuous
+       output.
+     - In a classification problem we are trying to map input variables in a
+       discrete output, i.e. trying to map input into discrete categories.
+** Unsupervised learning
+   - This allows us to approach problems where we have little to no knowledge of
+     what the output should look like.
+   - We derive structure from data by clustering it based on relationships among
+     the variables in the data.
+* Model and Cost Function
+** Model Representation
+   - \(x^{(i)}\) denotes input variables, or input features, and \(y^{(i)}\)
+     denotes the target or output variable that we are trying to predict. A pair
+     \((x^{(i)}, y^{(i)})\) is called a training example and the data-set that
+     we'll be using to learn - a list of \(m\) training examples \((x^{(i)},
+     y^{(i)})\), \(i = 1, \ldots , m\) - is called the training set. \(X\) will
+     denote the set of input values and \(Y\) will denote the output.
+   - In a supervised learning problem our goal is to learn a function
+     (hypothesis) \(h:X \to Y\) so the \(h(x)\) is a good predictor for the
+     corresponding value of \(y\).
+   - When the target variable \(y\) is continuous we call it a regression
+     problem, and when it can take on only a finite number of values it is
+     called a classification problem.
+** Cost Function
+   - A simple hypothesis function might look like \(h_{\theta}(x) = \theta_0 +
+     \theta_1 x\). The \(\theta\)s are called parameters, and a cost function is
+     used to help determine what these should be by measuring the accuracy of
+     our predictions.
+   - The *Squared Error Cost Function* is
+
+     \[
+       J(\theta_0 , \theta_1) = \frac{1}{2m} \sum_{i=1}^{m} (h_{\theta}(x^i) - y^i)^2
+     \]
+
+     and what it is doing is taking the parameters and for each input variable
+     computing the difference between the hypothesis result
+     (\(h_{\theta}(x^i)\)) and the actual desired output value (\(y^i\)),
+     squaring that to penalize greater differences (and remove negative
+     results), then taking the mean (average) of all these values. The mean is
+     halved as a convenience for the computation of the gradient descent.
+*** Intuition
+    - Our goal is to learn a line of best fit through our training data.
+      Learning this line of best fit means finding the right values for the
+      parameters to our hypothesis function.
+    - Our cost function is giving us an idea for how far off we are from that
+      line of best fit by measuring how far off each of our predictions is from
+      the actual value.
+    - Ideally, we would learn a line that passes through each of our training
+      data points. In this case, our cost function \(J(\theta_0, \theta_1)\)
+      would equal \(0\).
+    - Thus, as a goal, we should try to minimize the cost function, i.e. find
+      the values for the parameters which put our cost function at its global
+      minimum.
+* Parameter Learning
+  - *Gradient Descent* is used in combination with the cost function to estimate
+    the parameters of the hypothesis. It finds the values of the parameters at
+    which the cost function is minimized so that we can then use those
+    parameters in our hypothesis to predict on new data.
+  - To find the minimum, we take the partial derivative of the cost function to
+    learn which direction we should be moving towards (how we should adjust the
+    parameters), then we take steps of size \(\alpha\) in that direction.
+  - Gradient descent also works for functions
+    \(J(\theta_0,\theta_1,\ldots,\theta_n)\), but we will be using a function
+    with two parameters. The gradient descent algorithm is:
+
+    Repeat until convergence:
+
+    \[
+      \theta_j := \theta_j - \alpha \frac{\partial}{\partial \theta_j} J(\theta_0, \theta_1)
+    \]
+
+    where \(j=0,1\) represents the feature index number, and
+    \(\theta_0,\theta_1\) are some initial values chosen by us, commonly both
+    \(0\).
+
+    At each iteration \(j\), all parameters
+    \(\theta_0,\theta_1,\ldots,\theta_n\) must be simultaneously updated.
+    Updating one parameter and then using that updated value in the update of
+    another parameter will yield a wrong implementation.
+    [[/c/Users/siepp/Desktop/school/code-the-change/andrew_ng-ml/notes/images/simultaneous_gd_update.jpg]]
+
+    What this algorithm is saying is:
+    1. Are we at the minimum of the error function? Stop if yes. Otherwise
+       continue.
+    2. Simultaneously update each of the \(n\) (\(2\) in this case) number of
+       parameters by taking the partial derivative of the cost function with
+       respect to the current parameter, then multiplying that value by a value
+       \(\alpha\), and subtracting the result from the current parameter's
+       value.
+    So we are calculating the way in which the error function will move as we
+    change just one parameter by taking the partial derivative, then using that
+    information to update that parameter in a way which will minimize the error
+    function.
+  - One property of gradient descent to keep in mind is that you are not
+    guaranteed to find the global minimum using just the above algorithm. It is
+    possible to end up at a local minimum and this depends on where you started
+    with the error function, or which initial values for the parameters you chose.
+  - Note: In the above algorithm we have two to three loops, one to repeat until
+    we reach the minimum, one within to update each parameter, and another
+    within each update as we calculate the value of the error function by
+    looking at every example in our training data. The loop to update each
+    parameter is not necessary if we know how many parameters we have, but if we
+    had a variable number of parameters it would be necessary.
+  - \(\alpha\) is a _positive_ number called the *learning rate* and it controls how big a
+    step we take towards the minimum on each iteration. This number must be
+    positive or else we will move the parameters in the wrong direction.
+    - We adjust the alpha (\(\alpha\)) value to try to get our gradient descent
+      algorithm to finish in a reasonable amount of time. If we are failing to
+      converge or diverging it's possible that the alpha is too large and we are
+      stepping over the minimum instead of onto it. If we are converging but
+      very slowly it is possible that the alpha value is too small.
+  - With the above formula, \(\theta_j\) will increase when the slope is
+    negative and decrease when the slope is positive. So when the graph is
+    moving downwards (reading from left to right), we say "good, let's keep
+    going" and we increase our parameter's value (move it further right). When
+    the graph is moving upwards we say "okay, let's go back the other way", and
+    we decrease our parameter's value (move it further left).
+  - As we approach a minimum, \(|\frac{\partial}{\partial \theta_j} J(\theta_0,
+    \theta_1, \ldots, \theta_n)|\) will approach zero, so we will know to stop
+    when this happens (or when it gets very close to zero).
+  - The method of looking at every example in the entire training set on every
+    step is called *batch gradient descent*.
