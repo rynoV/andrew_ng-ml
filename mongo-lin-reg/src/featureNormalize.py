@@ -17,13 +17,16 @@ def featureNormalize(X):
     X_norm : array_like
         The normalized dataset of shape (m x n).
     """
-    X_norm = X.copy()
     mu = np.zeros(X.shape[1])
     sigma = np.zeros(X.shape[1])
     for i in range(X.shape[1]):
         feature = X[:, i]
         mu[i] = np.mean(feature)
         sigma[i] = np.std(feature)
-        X_norm[:, i] = (X_norm[:, i] - mu[i]) / sigma[i]
 
+    X_norm = normalize(X, mu, sigma)
     return X_norm, mu, sigma
+
+
+def normalize(X, mu, sigma):
+    return (np.array(X) - mu) / sigma
