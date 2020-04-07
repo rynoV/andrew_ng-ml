@@ -3,3 +3,4 @@
 /notes/*.pdf
 /notes/*.tex
 **/.idea/
+**/__pycache__/
