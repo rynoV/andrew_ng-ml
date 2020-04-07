@@ -43,7 +43,6 @@ def gradientDescent(X, y, theta, alpha, num_iters):
     J_history = []  # Use a python list to save cost in every iteration
 
     for i in range(num_iters):
-        # ==================== YOUR CODE HERE =================================
         # Calculate theta_1 * X_1 + theta_2 * X_2 + ... using matrix multiplication.
         predictions = X @ theta
         # Calculate the differences between the expected values and the actual values
@@ -55,8 +54,6 @@ def gradientDescent(X, y, theta, alpha, num_iters):
         change_in_theta = alpha * (1 / m) * np.sum(sum_inner, 0)
         # Update each theta with its respective change
         theta = theta - change_in_theta
-
-        # =====================================================================
 
         # save the cost J in every iteration
         J_history.append(computeCost(X, y, theta))
