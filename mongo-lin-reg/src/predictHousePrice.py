@@ -1,9 +1,9 @@
 import numpy as np
 
-from src.featureNormalize import normalize, featureNormalize
-from src.gradientDescent import gradientDescent
-from src.loadData import loadData
-from src.normalEquation import normalEquation
+from featureNormalize import normalize, featureNormalize
+from gradientDescent import gradientDescent
+from loadData import loadData
+from normalEquation import normalEquation
 
 
 def predictHousePrice(sqFeet, numOfBedrooms):
@@ -20,20 +20,14 @@ def predictHousePrice(sqFeet, numOfBedrooms):
         newX = normalize([[sqFeet, numOfBedrooms]], mu, sigma)
         # Predict the price by calculating t1 + t2x2 + t3x3 (plugging the new values into our hypothesis)
         price = (np.c_[np.ones(1), newX] @ theta)[0]
-        print(
-            'Predicted price of a ${:.0f} sq-ft, ${:.0f} br house (using gradient descent): ${:.0f}'
-                .format(sqFeet,
-                        numOfBedrooms,
-                        price))
+        return 'Predicted price of a ${:.0f} sq-ft, ${:.0f} br house (using gradient descent): ${:.0f}' \
+            .format(sqFeet, numOfBedrooms, price)
     else:
         X = prependOnesColumn(X)
         theta = normalEquation(X, y)
         price = np.array([1, sqFeet, numOfBedrooms]) @ theta
-        print(
-            'Predicted price of a ${:.0f} sq-ft, ${:.0f} br house (using normal equations): ${:.0f}'
-                .format(sqFeet,
-                        numOfBedrooms,
-                        price))
+        return 'Predicted price of a ${:.0f} sq-ft, ${:.0f} br house (using normal equations): ${:.0f}' \
+            .format(sqFeet, numOfBedrooms, price)
 
 
 def prependOnesColumn(X):

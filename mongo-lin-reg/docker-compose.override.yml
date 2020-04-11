@@ -1,0 +1,17 @@
+# Docker Compose merges this docker-compose.override.yml with docker-compose.yml automatically
+version: '3.7'
+
+services:
+  mongo:
+    container_name: ${MONGO_HOST}
+    restart: always
+
+  web:
+    container_name: web
+    restart: always
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    stdin_open: true
+    tty: true

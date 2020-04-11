@@ -1,0 +1,19 @@
+# This file is for use with docker stack deploy
+version: '3.7'
+
+services:
+  mongo:
+    restart: always
+  #    deploy:
+  #      mode: global
+  #      restart_policy:
+  #        condition: on_failure
+
+  web:
+    restart: always
+#    environment:
+#      # Override the host name to ensure it matches the service name
+#      MONGO_HOST: mongo
+#    deploy:
+#      restart_policy:
+#        condition: on_failure

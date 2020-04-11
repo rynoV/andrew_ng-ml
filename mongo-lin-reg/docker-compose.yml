@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  mongo:
+    container_name: ${MONGO_HOST}
+    image: mongo
+
+  web:
+    container_name: web
+    image: calumsieppert/mongo-lin-reg
+    ports:
+      - target: ${CONTAINER_PORT}
+        published: "8080"
+    env_file:
+      - .env
